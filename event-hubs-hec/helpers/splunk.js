@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 const axios = require("axios");
+const xmlbuilder = require('xmlbuilder');
 
 const getSourceType = function (sourcetype, resourceId, category) {
   // If this is an AAD sourcetype, append the category to the sourcetype and return
@@ -59,6 +60,61 @@ const getTimeStamp = function (message) {
   return null;
 };
 
+// const getHECPayload = async function (message, sourcetype) {
+//   try {
+//     jsonMessage = JSON.parse(message);
+//   } catch (err) {
+//     // The message is not JSON, so send it as-is.
+//     let payload = {
+//       sourcetype: sourcetype,
+//       event: message,
+//     };
+//     return payload;
+//   }
+
+//   // If the JSON contains a records[] array, batch the events for HEC.
+//   if (jsonMessage.hasOwnProperty("records")) {
+//     let payload = "";
+
+//     jsonMessage.records.forEach(function (record) {
+//       let recordEvent = {
+//         sourcetype: sourcetype,
+//         event: JSON.stringify(record),
+//       };
+
+//       if (
+//         record.hasOwnProperty("resourceId") &&
+//         record.hasOwnProperty("category")
+//       ) {
+//         // Get the sourcetype
+//         recordEvent["sourcetype"] = getSourceType(
+//           sourcetype,
+//           record.resourceId,
+//           record.category
+//         );
+//       }
+
+//       let eventTimeStamp = getTimeStamp(record);
+//       if (eventTimeStamp) {
+//         recordEvent["time"] = eventTimeStamp;
+//       }
+//       payload += JSON.stringify(recordEvent);
+//     });
+//     return payload;
+//   }
+
+//   // If we made it here, the JSON does not contain a records[] array, so send the data as-is
+//   let payload = {
+//     sourcetype: sourcetype,
+//     event: JSON.stringify(jsonMessage),
+//   };
+//   let eventTimeStamp = getTimeStamp(jsonMessage);
+//   if (eventTimeStamp) {
+//     payload["time"] = eventTimeStamp;
+//   }
+//   return payload;
+// };
+
 const getHECPayload = async function (message, sourcetype) {
   try {
     jsonMessage = JSON.parse(message);
@@ -94,24 +150,37 @@ const getHECPayload = async function (message, sourcetype) {
       }
 
       let eventTimeStamp = getTimeStamp(record);
+
       if (eventTimeStamp) {
-        recordEvent["time"] = eventTimeStamp;
+        recordEvent["time"] = eventTimeStamp / 1000;
       }
-      payload += JSON.stringify(recordEvent);
+
+      let xmlPayload = xmlbuilder.create({ root: recordEvent }).end({ pretty: true });
+      payload += xmlPayload + "\n";
     });
+
     return payload;
   }
 
-  // If we made it here, the JSON does not contain a records[] array, so send the data as-is
+  // If the JSON does not contain a records[] array, send the event as a single payload.
   let payload = {
     sourcetype: sourcetype,
     event: JSON.stringify(jsonMessage),
   };
-  let eventTimeStamp = getTimeStamp(jsonMessage);
-  if (eventTimeStamp) {
-    payload["time"] = eventTimeStamp;
+
+  if (jsonMessage.hasOwnProperty("resourceId") && jsonMessage.hasOwnProperty("category")) {
+    // Get the sourcetype
+    payload["sourcetype"] = getSourceType(sourcetype, jsonMessage.resourceId, jsonMessage.category);
   }
-  return payload;
+
+  let eventTimeStamp = getTimeStamp(jsonMessage);
+
+  if (eventTimeStamp) {
+    payload["time"] = eventTimeStamp / 1000;
+  }
+
+  let xmlPayload = xmlbuilder.create({ root: payload }).end({ pretty: true });
+  return xmlPayload;
 };
 
 const sendToHEC = async function (message, sourcetype) {
