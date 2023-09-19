@@ -177,7 +177,7 @@
                         "label": "Repository URL",
                         "toolTip": "URL for the function code.",
                         "type": "Microsoft.Common.TextBox",
-                        "defaultValue": "https://github.com/splunk/azure-functions-splunk.git",
+                        "defaultValue": "https://github.com/RobertoBorges/azure-functions-splunk.git",
                         "constraints": {
                             "required": true
                         }

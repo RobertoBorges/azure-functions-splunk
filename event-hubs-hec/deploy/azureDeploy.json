@@ -198,7 +198,7 @@
 
         "githubRepoURL": {
             "type": "string",
-            "defaultValue": "https://github.com/splunk/azure-functions-splunk.git"
+            "defaultValue": "https://github.com/RobertoBorges/azure-functions-splunk.git"
         },
         "githubRepoBranch": {
             "type": "string",

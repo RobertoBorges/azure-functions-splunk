@@ -60,7 +60,7 @@
         },
         "githubRepoURL": {
             "type": "string",
-            "defaultValue": "https://github.com/splunk/azure-functions-splunk.git"
+            "defaultValue": "https://github.com/RobertoBorges/azure-functions-splunk.git"
         },
         "githubRepoBranch": {
             "type": "string",
@@ -141,11 +141,11 @@
                         },
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "~12"
+                            "value": "~20"
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~3"
+                            "value": "~4"
                         },
                         {
                             "name": "SPLUNK_HEC_TOKEN",
