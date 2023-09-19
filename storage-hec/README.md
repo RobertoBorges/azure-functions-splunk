@@ -1,7 +1,7 @@
 # Azure Functions for Sending Azure Storage data to a Splunk HTTP Event Collector
 Azure storage operations can trigger serverless Azure Functions.  Azure Functions can further process the raw events in near real-time.
 
-<a href="https://portal.azure.com/#blade/Microsoft_Azure_CreateUIDef/CustomDeploymentBlade/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsplunk%2Fazure-functions-splunk%2Fmaster%2Fstorage-hec%2Fdeploy%2FazureDeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fsplunk%2Fazure-functions-splunk%2Fmaster%2Fstorage-hec%2Fdeploy%2FazureDeploy.portal.json" target="_blank">
+<a href="https://portal.azure.com/#blade/Microsoft_Azure_CreateUIDef/CustomDeploymentBlade/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRobertoBorges%2Fazure-functions-splunk%2Fmaster%2Fstorage-hec%2Fdeploy%2FazureDeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FRobertoBorges%2Fazure-functions-splunk%2Fmaster%2Fstorage-hec%2Fdeploy%2FazureDeploy.portal.json" target="_blank">
 <img src="https://aka.ms/deploytoazurebutton"/>
 </a>
 
