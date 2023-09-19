@@ -53,8 +53,15 @@ const getEpochTime = function (timeString) {
 };
 
 const getTimeStamp = function (message) {
-  if (message.hasOwnProperty("time")) {
-    return getEpochTime(message["time"]);
+  if (message.hasOwnProperty("TimeGenerated")) {
+    return getEpochTime(message["TimeGenerated"]);
+  }
+  return null;
+};
+
+const getComputerName = function (message) {
+  if (message.hasOwnProperty("Computer")) {
+    return message["Computer"];
   }
   return null;
 };
@@ -83,7 +90,7 @@ const getHECPayload = async function (message, sourcetype) {
 
       if (
         record.hasOwnProperty("resourceId") &&
-        record.hasOwnProperty("category")
+        record.hasOwnProperty("category") 
       ) {
         // Get the sourcetype
         recordEvent["sourcetype"] = getSourceType(
@@ -91,6 +98,29 @@ const getHECPayload = async function (message, sourcetype) {
           record.resourceId,
           record.category
         );
+      }
+
+      // If this is a WinEventLog, set the host, index, source, sourcetype, and event fields
+      if (
+        record.hasOwnProperty("Computer") &&
+        record.hasOwnProperty("EventData") &&
+        record.hasOwnProperty("EventLog")
+      ) {
+
+        recordEvent["host"] = record["Computer"];
+        if (record["EventLog"] == "Security") {
+          recordEvent["index"] = "wineventlog_security";
+        } else {
+          recordEvent["index"] = "wineventlog";
+        }
+        recordEvent["source"] =  `${"WinEventLog"}:${record["EventLog"]}`;
+        recordEvent["sourcetype"] = record["XmlWinEventLog"];
+        recordEvent["event"] = record["EventData"];
+      }
+
+      let computerName = getComputerName(record);
+      if (computerName) {
+        recordEvent["host"] = computerName;
       }
 
       let eventTimeStamp = getTimeStamp(record);
