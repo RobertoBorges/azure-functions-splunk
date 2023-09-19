@@ -312,7 +312,7 @@
                                 "options": {
                                   "icon": "Info",
                                   "text": "The base sourcetype will be combined with the event category to construct the full Splunk sourcetype.",
-                                  "uri": "https://github.com/splunk/azure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
+                                  "uri": "https://github.com/RobertoBorgesazure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
                                 }
                             }
                         ]
@@ -376,7 +376,7 @@
                                 "options": {
                                   "icon": "Info",
                                   "text": "The base sourcetype will be combined with the event category to construct the full Splunk sourcetype.",
-                                  "uri": "https://github.com/splunk/azure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
+                                  "uri": "https://github.com/RobertoBorgesazure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
                                 }
                             }
                         ]
@@ -440,7 +440,7 @@
                                 "options": {
                                   "icon": "Info",
                                   "text": "The base sourcetype will be combined with the event category to construct the full Splunk sourcetype.",
-                                  "uri": "https://github.com/splunk/azure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
+                                  "uri": "https://github.com/RobertoBorgesazure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
                                 }
                             }
                         ]
@@ -505,7 +505,7 @@
                         "options": {
                           "icon": "Info",
                           "text": "The function code will attempt to create a Splunk sourcetype based on the resourceId of the event. If a sourcetype cannot be constructed from the event, the specified default sourcetype entered will be used.",
-                          "uri": "https://github.com/splunk/azure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
+                          "uri": "https://github.com/RobertoBorgesazure-functions-splunk/tree/event-hubs/event-hubs-hec#splunk-sourcetypes"
                         }
                     }
                 ]
