@@ -43,13 +43,13 @@
         "ClientID" : {
             "type": "string",
             "metadata": {
-                "description": "<a href='https://github.com/RobertoBorgesazure-functions-splunk/blob/master/graph/README.md'>Documentation</a>"
+                "description": "<a href='https://github.com/RobertoBorges/azure-functions-splunk/blob/master/graph/README.md'>Documentation</a>"
             }
         },
         "ClientSecret": {
             "type": "string",
             "metadata": {
-                "description": "<a href='https://github.com/RobertoBorgesazure-functions-splunk/blob/master/graph/README.md'>Documentation</a>"
+                "description": "<a href='https://github.com/RobertoBorges/azure-functions-splunk/blob/master/graph/README.md'>Documentation</a>"
             }
         }
     },
