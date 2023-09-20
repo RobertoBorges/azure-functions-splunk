@@ -163,7 +163,7 @@ const sendToHEC = async function (message, sourcetype) {
         .then(function (response) {
           //show the response
           console.log(
-            `message processed: ${JSON.stringify(response["data"].form)}`
+            `message processed: ${JSON.stringify(response["data"].form)} original message: ${message}`
           );
         });
     })
