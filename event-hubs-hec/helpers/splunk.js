@@ -22,7 +22,7 @@ const getSourceType = function (sourcetype, resourceId, category) {
     process.env["AAD_NON_INTERACTIVE_SIGNIN_LOG_SOURCETYPE"],
     process.env["AAD_SERVICE_PRINCIPAL_SIGNIN_LOG_SOURCETYPE"],
     process.env["AAD_PROVISIONING_LOG_SOURCETYPE"],
-response["data"].form.indexOf("{")  ];
+  ];
   if (aadSourcetypes.indexOf(sourcetype) > -1) {
     return `${sourcetype}:${category.toLowerCase()}`;
   }
@@ -84,13 +84,12 @@ const getHECPayload = async function (message, sourcetype) {
 
     jsonMessage.records.forEach(function (record) {
       let recordEvent = {
-        sourcetype: sourcetype,
-        event: JSON.stringify(record),
+        sourcetype: sourcetype
       };
 
       if (
         record.hasOwnProperty("resourceId") &&
-        record.hasOwnProperty("category") 
+        record.hasOwnProperty("category")
       ) {
         // Get the sourcetype
         recordEvent["sourcetype"] = getSourceType(
@@ -106,16 +105,17 @@ const getHECPayload = async function (message, sourcetype) {
         record.hasOwnProperty("EventData") &&
         record.hasOwnProperty("EventLog")
       ) {
-
         recordEvent["host"] = record["Computer"];
         if (record["EventLog"] == "Security") {
           recordEvent["index"] = "wineventlog_security";
         } else {
           recordEvent["index"] = "wineventlog";
         }
-        recordEvent["source"] =  `${"WinEventLog"}:${record["EventLog"]}`;
+        recordEvent["source"] = `${"WinEventLog"}:${record["EventLog"]}`;
         recordEvent["sourcetype"] = record["XmlWinEventLog"];
         recordEvent["event"] = record["EventData"];
+      } else {
+        recordEvent["event"] = JSON.stringify(record);
       }
 
       let computerName = getComputerName(record);
@@ -151,18 +151,21 @@ const sendToHEC = async function (message, sourcetype) {
 
   await getHECPayload(message, sourcetype)
     .then((payload) => {
-      return axios.post(
-        process.env["SPLUNK_HEC_URL"],
-        payload,
-        { headers: headers },
-        (httpsAgent = new (require("https").Agent)({
-          rejectUnauthorized: false,
-        }))
-      )
-      .then(function (response) {
-        //show the response
-        console.log(`message processed: ${JSON.stringify(response.statusText)}`);
-      });
+      return axios
+        .post(
+          process.env["SPLUNK_HEC_URL"],
+          payload,
+          { headers: headers },
+          (httpsAgent = new (require("https").Agent)({
+            rejectUnauthorized: false,
+          }))
+        )
+        .then(function (response) {
+          //show the response
+          console.log(
+            `message processed: ${JSON.stringify(response["data"].form)}`
+          );
+        });
     })
     .catch((err) => {
       throw err;
