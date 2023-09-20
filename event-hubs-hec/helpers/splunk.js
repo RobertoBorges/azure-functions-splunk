@@ -125,7 +125,7 @@ const getHECPayload = async function (message, sourcetype) {
 
       let eventTimeStamp = getTimeStamp(record);
       if (eventTimeStamp) {
-        recordEvent["time"] = eventTimeStamp;
+        recordEvent["eventTimeStamp"] = eventTimeStamp;
       }
       payload += JSON.stringify(recordEvent);
     });
@@ -163,7 +163,7 @@ const sendToHEC = async function (message, sourcetype) {
         .then(function (response) {
           //show the response
           console.log(
-            `message processed: ${JSON.stringify(response["data"].form)} original message: ${message}`
+            `message processed: ${JSON.stringify(response["data"])} original message: ${message}`
           );
         });
     })
