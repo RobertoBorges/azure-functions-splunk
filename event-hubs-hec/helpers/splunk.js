@@ -113,7 +113,7 @@ const getHECPayload = async function (message, sourcetype) {
         }
         recordEvent["source"] = `${"WinEventLog"}:${record["EventLog"]}`;
         recordEvent["sourcetype"] = record["XmlWinEventLog"];
-        recordEvent["event"] = record["EventData"];
+        recordEvent["event"] = record["EventData"].replace(/"/g, "'");
       } else {
         recordEvent["event"] = JSON.stringify(record);
       }
