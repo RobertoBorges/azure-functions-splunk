@@ -15,6 +15,16 @@ limitations under the License.
 */
 const axios = require("axios");
 
+// Enable the following code in order to Debug the HEC payload
+// axios.interceptors.request.use(request => {
+//   console.log('Starting Request', JSON.stringify(request, null, 2))
+//   return request
+// });
+// axios.interceptors.response.use(response => {
+//   console.log('Response:', response)
+//   return response
+// });
+
 const getSourceType = function (sourcetype, resourceId, category) {
   // If this is an AAD sourcetype, append the category to the sourcetype and return
   let aadSourcetypes = [
@@ -71,51 +81,33 @@ const getHECPayload = async function (message, sourcetype) {
     jsonMessage = JSON.parse(message);
   } catch (err) {
     // The message is not JSON, so send it as-is.
-    let payload = {
+    return {
       sourcetype: sourcetype,
       event: message,
     };
-    return payload;
   }
 
   // If the JSON contains a records[] array, batch the events for HEC.
   if (jsonMessage.hasOwnProperty("records")) {
-    let payload = "";
-
-    jsonMessage.records.forEach(function (record) {
+    let payload = jsonMessage.records.map(record => {
       let recordEvent = {
         sourcetype: sourcetype
       };
 
-      if (
-        record.hasOwnProperty("resourceId") &&
-        record.hasOwnProperty("category")
-      ) {
+      if (record.hasOwnProperty("resourceId") && record.hasOwnProperty("category")) {
         // Get the sourcetype
-        recordEvent["sourcetype"] = getSourceType(
-          sourcetype,
-          record.resourceId,
-          record.category
-        );
+        recordEvent["sourcetype"] = getSourceType(sourcetype, record.resourceId, record.category);
       }
 
       // If this is a WinEventLog, set the host, index, source, sourcetype, and event fields
-      if (
-        record.hasOwnProperty("Computer") &&
-        record.hasOwnProperty("EventData") &&
-        record.hasOwnProperty("EventLog")
-      ) {
+      if (record.hasOwnProperty("Computer") && record.hasOwnProperty("EventData") && record.hasOwnProperty("EventLog")) {
         recordEvent["host"] = record["Computer"];
-        if (record["EventLog"] == "Security") {
-          recordEvent["index"] = "wineventlog_security";
-        } else {
-          recordEvent["index"] = "wineventlog";
-        }
+        recordEvent["index"] = record["EventLog"] == "Security" ? "wineventlog_security" : "wineventlog";
         recordEvent["source"] = `${"WinEventLog"}:${record["EventLog"]}`;
         recordEvent["sourcetype"] = record["XmlWinEventLog"];
         recordEvent["event"] = record["EventData"].replace(/"/g, "'");
       } else {
-        recordEvent["event"] = JSON.stringify(record);
+        recordEvent["event"] = JSON.stringify(record).replace(/\\"/g, "'");
       }
 
       let computerName = getComputerName(record);
@@ -127,8 +119,9 @@ const getHECPayload = async function (message, sourcetype) {
       if (eventTimeStamp) {
         recordEvent["eventTimeStamp"] = eventTimeStamp;
       }
-      payload += JSON.stringify(recordEvent);
-    });
+
+      return JSON.stringify(recordEvent).replace(/\\"/g, "'");
+    }).join("");
     return payload;
   }
 
@@ -139,37 +132,31 @@ const getHECPayload = async function (message, sourcetype) {
   };
   let eventTimeStamp = getTimeStamp(jsonMessage);
   if (eventTimeStamp) {
-    payload["time"] = eventTimeStamp;
+    payload["eventTimeStamp"] = eventTimeStamp;
   }
   return payload;
 };
 
-const sendToHEC = async function (message, sourcetype) {
-  let headers = {
-    Authorization: `Splunk ${process.env["SPLUNK_HEC_TOKEN"]}`,
-  };
+const sendToHEC = async (message, sourcetype) => {
+  payload = "";
+  try {
+    const headers = {
+      Authorization: `Splunk ${process.env.SPLUNK_HEC_TOKEN}`,
+      "content-Type": "application/json",
+    };
 
-  await getHECPayload(message, sourcetype)
-    .then((payload) => {
-      return axios
-        .post(
-          process.env["SPLUNK_HEC_URL"],
-          payload,
-          { headers: headers },
-          (httpsAgent = new (require("https").Agent)({
-            rejectUnauthorized: false,
-          }))
-        )
-        .then(function (response) {
-          //show the response
-          console.log(
-            `message processed: ${JSON.stringify(response["data"])} original message: ${message}`
-          );
-        });
-    })
-    .catch((err) => {
-      throw err;
+    let payload = await getHECPayload(message, sourcetype);
+    payload = payload.replace(/\\"/g, "'");
+
+    await axios.post(process.env.SPLUNK_HEC_URL, payload, {
+      headers,
+      httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),
     });
+
+    console.log(`message sent, original message: ${message} sourcetype: ${sourcetype} payload: ${payload}`);
+  } catch (error) {
+    console.error(`Error sending message to Splunk: ${error} message: ${message} sourcetype: ${sourcetype} payload: ${payload}`);
+  }
 };
 
 exports.sendToHEC = sendToHEC;
