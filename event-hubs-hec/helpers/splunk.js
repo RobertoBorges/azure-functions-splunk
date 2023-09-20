@@ -22,7 +22,7 @@ const getSourceType = function (sourcetype, resourceId, category) {
     process.env["AAD_NON_INTERACTIVE_SIGNIN_LOG_SOURCETYPE"],
     process.env["AAD_SERVICE_PRINCIPAL_SIGNIN_LOG_SOURCETYPE"],
     process.env["AAD_PROVISIONING_LOG_SOURCETYPE"],
-  ];
+response["data"].form.indexOf("{")  ];
   if (aadSourcetypes.indexOf(sourcetype) > -1) {
     return `${sourcetype}:${category.toLowerCase()}`;
   }
@@ -158,7 +158,11 @@ const sendToHEC = async function (message, sourcetype) {
         (httpsAgent = new (require("https").Agent)({
           rejectUnauthorized: false,
         }))
-      );
+      )
+      .then(function (response) {
+        //show the response
+        console.log(`message processed: ${JSON.stringify(response.statusText)}`);
+      });
     })
     .catch((err) => {
       throw err;
