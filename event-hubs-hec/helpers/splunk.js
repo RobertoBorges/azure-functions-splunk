@@ -153,7 +153,7 @@ const sendToHEC = async (message, sourcetype) => {
       httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),
     });
 
-    console.log(`message sent, original message: ${message} sourcetype: ${sourcetype} payload: ${payload}`);
+    // console.log(`message sent, original message: ${message} sourcetype: ${sourcetype} payload: ${payload}`);
   } catch (error) {
     console.error(`Error sending message to Splunk: ${error} message: ${message} sourcetype: ${sourcetype} payload: ${payload}`);
   }
