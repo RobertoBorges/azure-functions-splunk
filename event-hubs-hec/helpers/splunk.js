@@ -86,7 +86,8 @@ const sendToHEC = async function(message, sourcetype) {
             "sourcetype": sourcetype,
             "event": message
         }
-        axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers});
+        axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
+          httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
         return;
     }
 
@@ -132,7 +133,8 @@ const sendToHEC = async function(message, sourcetype) {
           let eventTimeStamp = getTimeStamp(record);
           if(eventTimeStamp) { recordEvent["time"] = eventTimeStamp; }
           payload = JSON.stringify(recordEvent);
-          axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers});
+          axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
+            httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
       });
       return;
   } else {
@@ -145,7 +147,8 @@ const sendToHEC = async function(message, sourcetype) {
     let eventTimeStamp = getTimeStamp(jsonMessage);
     if(eventTimeStamp) { payload["time"] = eventTimeStamp; }
     payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
-    axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers});
+    axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
+      httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
   }
 }
 
