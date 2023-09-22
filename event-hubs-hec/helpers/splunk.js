@@ -56,12 +56,19 @@ const getEpochTime = function(timeString) {
 
 const getTimeStamp = function(message) {
     if(message.hasOwnProperty('time')) {
-        return message["time"];
-    } 
-    if (message.hasOwnProperty('TimeGenerated')) {
-      return message["TimeGenerated"];
+        return getEpochTime(message["time"]);
     }
     return null;
+}
+
+const getSource = function(message) {
+  if (message.hasOwnProperty("SourceSystem")) {
+    return message["SourceSystem"];
+  } else if (message.hasOwnProperty("Source")) {
+    return message["Source"];
+  } else {
+    return "Azure";
+  }
 }
 
 const sendToHEC = async function(message, sourcetype) {
@@ -90,8 +97,10 @@ const sendToHEC = async function(message, sourcetype) {
     if(jsonMessage.hasOwnProperty('records')) {
 
       jsonMessage.records.forEach(function(record) {
-          
-          let recordEvent = record;
+
+          let recordEvent = {
+            sourcetype: sourcetype
+          };
           
           if((record.hasOwnProperty('resourceId')) && (record.hasOwnProperty('category'))) {
               // Get the sourcetype
@@ -110,10 +119,14 @@ const sendToHEC = async function(message, sourcetype) {
                 ? "wineventlog_security"
                 : "wineventlog";
             recordEvent["source"] = `${"WinEventLog"}:${record["EventLog"]}`;
-            recordEvent["sourcetype"] = record["XmlWinEventLog"];
+            recordEvent["sourcetype"] = "XmlWinEventLog";
             recordEvent["event"] = record["EventData"].replace(/"/g, "'");
           } else {
             recordEvent["event"] = JSON.stringify(record).replace(/\\"/g, "'");
+            let source = getSource(record);
+            if (source) {
+              recordEvent["source"] = source;
+            }
           }
 
           let computerName = getComputerName(record);
@@ -124,6 +137,7 @@ const sendToHEC = async function(message, sourcetype) {
           let eventTimeStamp = getTimeStamp(record);
           if(eventTimeStamp) { recordEvent["time"] = eventTimeStamp; }
           payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
+          console.log(payload);
           axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
             httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
       });
@@ -135,6 +149,9 @@ const sendToHEC = async function(message, sourcetype) {
         "sourcetype": sourcetype,
         "event": JSON.stringify(jsonMessage)
     }
+    if (source) {
+      recordEvent["source"] = source;
+    }
     let eventTimeStamp = getTimeStamp(jsonMessage);
     if(eventTimeStamp) { payload["time"] = eventTimeStamp; }
     payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
@@ -144,4 +161,3 @@ const sendToHEC = async function(message, sourcetype) {
 }
 
 exports.sendToHEC = sendToHEC;
-
