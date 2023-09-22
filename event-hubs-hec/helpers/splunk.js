@@ -149,6 +149,7 @@ const sendToHEC = async function(message, sourcetype) {
         "sourcetype": sourcetype,
         "event": JSON.stringify(jsonMessage)
     }
+    let source = getSource(record);
     if (source) {
       recordEvent["source"] = source;
     }
