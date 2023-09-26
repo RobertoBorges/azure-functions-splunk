@@ -88,8 +88,14 @@ const sendToHEC = async function(message, sourcetype) {
             "sourcetype": sourcetype,
             "event": message
         }
-        axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
-          httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
+        try {
+          axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
+            httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});         
+        } catch (error) {
+          console.error(
+            `Error sending message to Splunk: ${error} message: ${payload} `
+          );
+        }
         return;
     }
 
@@ -129,8 +135,8 @@ const sendToHEC = async function(message, sourcetype) {
           ) {
             recordEvent["host"] = record["Computer"];
             recordEvent["index"] ="OS";
-            recordEvent["source"] = "linux_syslog";
-            recordEvent["sourcetype"] = record["ProcessName"];
+            recordEvent["source"] = record["ProcessName"];
+            recordEvent["sourcetype"] = "linux_message_syslog";
             recordEvent["event"] = record["SyslogMessage"].replace(/"/g, "'");
           } else {
             recordEvent["event"] = JSON.stringify(record).replace(/\\"/g, "'");
@@ -149,8 +155,17 @@ const sendToHEC = async function(message, sourcetype) {
           if(eventTimeStamp) { recordEvent["time"] = eventTimeStamp; }
           payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
           console.log(payload);
-          axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
-            httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
+          try {
+            axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
+              httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),}).catch(function (error) {
+                console.log(error);
+              });;         
+          } catch (error) {
+            console.error(
+              `Error sending message to Splunk: ${error} message: ${payload} `
+            );
+          }
+
       });
       return;
   } else {
@@ -167,8 +182,14 @@ const sendToHEC = async function(message, sourcetype) {
     let eventTimeStamp = getTimeStamp(jsonMessage);
     if(eventTimeStamp) { payload["time"] = eventTimeStamp; }
     payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
-    axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
-      httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});
+    try {
+      axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
+        httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});         
+    } catch (error) {
+      console.error(
+        `Error sending message to Splunk: ${error} message: ${payload} `
+      );
+    }
   }
 }
 
