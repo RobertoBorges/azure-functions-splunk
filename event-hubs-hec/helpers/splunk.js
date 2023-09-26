@@ -108,6 +108,7 @@ const sendToHEC = async function(message, sourcetype) {
           }
               
           // If this is a WinEventLog, set the host, index, source, sourcetype, and event fields
+          // Else if is a linux machine
           if (
             record.hasOwnProperty("Computer") &&
             record.hasOwnProperty("EventData") &&
@@ -121,6 +122,16 @@ const sendToHEC = async function(message, sourcetype) {
             recordEvent["source"] = `${"WinEventLog"}:${record["EventLog"]}`;
             recordEvent["sourcetype"] = "XmlWinEventLog";
             recordEvent["event"] = record["EventData"].replace(/"/g, "'");
+          } else if (
+            record.hasOwnProperty("HostName") &&
+            record.hasOwnProperty("SourceSystem") &&
+            record.hasOwnProperty("SyslogMessage")
+          ) {
+            recordEvent["host"] = record["Computer"];
+            recordEvent["index"] ="OS";
+            recordEvent["source"] = "linux_syslog";
+            recordEvent["sourcetype"] = record["ProcessName"];
+            recordEvent["event"] = record["SyslogMessage"].replace(/"/g, "'");
           } else {
             recordEvent["event"] = JSON.stringify(record).replace(/\\"/g, "'");
             let source = getSource(record);
