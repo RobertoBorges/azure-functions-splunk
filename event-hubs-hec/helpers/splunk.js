@@ -157,9 +157,7 @@ const sendToHEC = async function(message, sourcetype) {
           console.log(payload);
           try {
             axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
-              httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),}).catch(function (error) {
-                console.log(error);
-              });;         
+              httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});         
           } catch (error) {
             console.error(
               `Error sending message to Splunk: ${error} message: ${payload} `
