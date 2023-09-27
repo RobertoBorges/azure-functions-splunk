@@ -134,7 +134,7 @@ const sendToHEC = async function(message, sourcetype) {
             record.hasOwnProperty("SyslogMessage")
           ) {
             recordEvent["host"] = record["Computer"];
-            recordEvent["index"] ="OS";
+            recordEvent["index"] ="os";
             recordEvent["source"] = "linux_syslog" ;
             recordEvent["sourcetype"] = "linux_message_syslog";
             recordEvent["event"] = record["SyslogMessage"].replace(/"/g, "'");
