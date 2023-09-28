@@ -135,7 +135,12 @@ const sendToHEC = async function(message, sourcetype) {
           ) {
             recordEvent["host"] = record["Computer"];
             recordEvent["index"] ="os";
-            recordEvent["source"] = "linux_syslog" ;
+            //if this or that
+            if(record["ProcessName"] == "audit-log" || record["ProcessName"] == "audit_log" || record["ProcessName"] == "auditd") {
+              recordEvent["source"] = "linux_secure" ;
+            } else {  
+              recordEvent["source"] = "linux_syslog" ;
+            }
             recordEvent["sourcetype"] = "linux_message_syslog";
             recordEvent["event"] = record["SyslogMessage"].replace(/"/g, "'");
           } else {
