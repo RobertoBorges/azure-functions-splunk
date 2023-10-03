@@ -26,5 +26,5 @@ module.exports = async function (context, eventHubMessages) {
                     context.bindings.outputBlob = event;
                 })
     }
-    //context.done();
+    context.done();
 };
