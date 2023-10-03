@@ -74,7 +74,11 @@ const getSource = function(message) {
 
 const getEventString = function(record) {
 
-  eventString = `<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='${record["Source"]}'/><EventID Qualifiers='${record["EventCategory"]}'>${record["EventID"]}</EventID><Level>${record["EventLevel"]}</Level><TimeCreated SystemTime='${record["TimeGenerated"]}'/><Channel>${record["EventLog"]}</Channel><Computer>${record["Computer"]}</Computer><Security UserID='${record["UserName"]}'/></System><EventData>${record["EventData"].replace("http://schemas.microsoft.com/win/2004/08/events/event", "").replace("xmlns=", "").replace("'", "")}</EventData></Event>`;
+  eventclean = record["EventData"].replace("http://schemas.microsoft.com/win/2004/08/events/event", "");
+  eventclean = eventclean.replace("xmlns=", "");
+  eventclean = eventclean.replace("'", "");
+
+  eventString = `<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='${record["Source"]}'/><EventID Qualifiers='${record["EventCategory"]}'>${record["EventID"]}</EventID><Level>${record["EventLevel"]}</Level><TimeCreated SystemTime='${record["TimeGenerated"]}'/><Channel>${record["EventLog"]}</Channel><Computer>${record["Computer"]}</Computer><Security UserID='${record["UserName"]}'/></System><EventData>${eventclean}</EventData></Event>`;
   
   return eventString;
   
