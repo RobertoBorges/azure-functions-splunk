@@ -74,7 +74,7 @@ const getSource = function(message) {
 
 const getEventString = function(record) {
 
-  eventString = `<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='${record["Source"]}'/><EventID Qualifiers='${record["EventCategory"]}'>${record["EventID"]}</EventID><Level>${record["EventLevel"]}</Level><TimeCreated SystemTime='${record["TimeGenerated"]}'/><Channel>${record["EventLog"]}</Channel><Computer>${record["Computer"]}</Computer><Security UserID='${record["UserName"]}'/></System><EventData>${record["EventData"].replace("http://schemas.microsoft.com/win/2004/08/events/event", "").replace("xmlns=", "")}</EventData></Event>`;
+  eventString = `<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='${record["Source"]}'/><EventID Qualifiers='${record["EventCategory"]}'>${record["EventID"]}</EventID><Level>${record["EventLevel"]}</Level><TimeCreated SystemTime='${record["TimeGenerated"]}'/><Channel>${record["EventLog"]}</Channel><Computer>${record["Computer"]}</Computer><Security UserID='${record["UserName"]}'/></System><EventData>${record["EventData"].replace("http://schemas.microsoft.com/win/2004/08/events/event", "")}</EventData></Event>`;
   
   return eventString;
   
@@ -129,6 +129,7 @@ const sendToHEC = async function(message, sourcetype) {
             record.hasOwnProperty("EventData") &&
             record.hasOwnProperty("EventLog")
           ) {
+            // Windows Logs
             recordEvent["host"] = record["Computer"];
             recordEvent["index"] =
               record["EventLog"] == "Security"
@@ -139,12 +140,12 @@ const sendToHEC = async function(message, sourcetype) {
 
             // Call the function to Build the event string
             recordEvent["event"] = getEventString(record).replace(/"/g, "'");
-            // recordEvent["event"] = record["EventData"].replace(/"/g, "'");
           } else if (
             record.hasOwnProperty("HostName") &&
             record.hasOwnProperty("SourceSystem") &&
             record.hasOwnProperty("SyslogMessage")
           ) {
+            // Linux Logs
             recordEvent["host"] = record["Computer"];
             recordEvent["index"] ="os";
             //if this or that
@@ -156,7 +157,8 @@ const sendToHEC = async function(message, sourcetype) {
             recordEvent["source"] = "linux_syslog";
             recordEvent["event"] = record["SyslogMessage"].replace(/"/g, "'");
           } else {
-            recordEvent["event"] = JSON.stringify(record).replace(/\\"/g, "'");
+
+            recordEvent["event"] = JSON.stringify(record);
             let source = getSource(record);
             if (source) {
               recordEvent["source"] = source;
@@ -170,7 +172,7 @@ const sendToHEC = async function(message, sourcetype) {
           
           let eventTimeStamp = getTimeStamp(record);
           if(eventTimeStamp) { recordEvent["time"] = eventTimeStamp; }
-          payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
+          payload = JSON.stringify(recordEvent);
           console.log(payload);
           try {
             axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
@@ -196,7 +198,7 @@ const sendToHEC = async function(message, sourcetype) {
     }
     let eventTimeStamp = getTimeStamp(jsonMessage);
     if(eventTimeStamp) { payload["time"] = eventTimeStamp; }
-    payload = JSON.stringify(recordEvent).replace(/\\"/g, "'");
+    payload = JSON.stringify(recordEvent);
     try {
       axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
         httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});         
