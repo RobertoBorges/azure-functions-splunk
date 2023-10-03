@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 const axios = require('axios');
+const { get } = require('http');
 
 const getSourceType = function(sourcetype, resourceId, category) {
 
@@ -69,6 +70,13 @@ const getSource = function(message) {
   } else {
     return "Azure";
   }
+}
+
+const getEventString = function(record) {
+
+  eventString = `<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='${record["Source"]}'/><EventID Qualifiers='${record["EventCategory"]}'>${record["EventID"]}</EventID><Level>${record["EventLevel"]}</Level><TimeCreated SystemTime='${record["TimeGenerated"]}'/><Channel>${record["EventLog"]}</Channel><Computer>${record["Computer"]}</Computer><Security UserID='${record["UserName"]}'/></System><EventData>${record["EventData"]}</EventData></Event>`;
+  
+  return eventString;
 }
 
 const sendToHEC = async function(message, sourcetype) {
@@ -127,7 +135,10 @@ const sendToHEC = async function(message, sourcetype) {
                 : "wineventlog";
             recordEvent["source"] = `${"WinEventLog"}:${record["EventLog"]}`;
             recordEvent["sourcetype"] = "XmlWinEventLog";
-            recordEvent["event"] = record["EventData"].replace(/"/g, "'");
+
+            // Call the function to Build the event string
+            recordEvent["event"] = getEventString(record).replace(/"/g, "'");
+            // recordEvent["event"] = record["EventData"].replace(/"/g, "'");
           } else if (
             record.hasOwnProperty("HostName") &&
             record.hasOwnProperty("SourceSystem") &&
