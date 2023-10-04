@@ -217,7 +217,7 @@ const sendToHEC = function (message, sourcetype) {
             console.log(`response from splunk ${resp.status}`);
           })
           .catch((err) => {
-            console.log(`error from splunk ${err}`);
+            console.error(`error from splunk ${err} payload ${payload}`);
           });
       } catch (error) {
         console.error(
