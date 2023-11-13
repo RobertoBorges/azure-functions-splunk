@@ -60,6 +60,14 @@ const getComputerName = function (message) {
   return null;
 };
 
+const getHostName = function (message) {
+  // It receive a string with the followin pattern and break into an array
+  // 13 15:52 nameofaresource this is a message
+  // then it takes the third element of the array and return it
+  let hostname = message.split(" ")[2];
+  return hostname;
+};
+
 const getEpochTime = function (timeString) {
   try {
     let epochTime = new Date(timeString).getTime();
@@ -160,7 +168,29 @@ const sendToHEC = function (message, sourcetype) {
 
       // If this is a WinEventLog, set the host, index, source, sourcetype, and event fields
       // Else if is a linux machine
-      if (
+      if (computerName == process.env["SERVER_NAME"] && record.hasOwnProperty("SyslogMessage"))
+      {
+        let hostname = getHostName(record["SyslogMessage"]);
+        // check if the hostname container is equal to the servername variable
+        
+        if (hostname.includes("-lbl-")) {
+          
+          recordEvent["host"] = hostname;
+          recordEvent["index"] = "f5_ltm";
+          recordEvent["sourcetype"] = "f5:bigip:syslog"
+          recordEvent["source"] = computerName;
+          
+        } else {
+
+          recordEvent["host"] = hostname;
+          recordEvent["index"] = "checkpoint";
+          recordEvent["sourcetype"] = "cp_log:syslog"
+          recordEvent["source"] = computerName;          
+        }
+        
+        recordEvent["event"] = record["SyslogMessage"].replace(/"/g, "'");
+
+      } else if (
         record.hasOwnProperty("Computer") &&
         record.hasOwnProperty("EventData") &&
         record.hasOwnProperty("EventLog")
