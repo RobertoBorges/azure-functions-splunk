@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{9019761F-879C-4207-9664-6DDDE7B127AD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "~", "~", "{1FC8BAC5-A17D-42B6-97E7-29A2CA8FE40F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".azure-functions-core-tools", ".azure-functions-core-tools", "{1E0F239D-490F-4986-8C12-283620D3EFEA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{53583785-73D9-4D9F-9477-83E10ACD933D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExtensionBundles", "ExtensionBundles", "{90F1719A-7C75-4B55-B06C-60C1251B1BC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Azure.Functions.ExtensionBundle", "Microsoft.Azure.Functions.ExtensionBundle", "{30627D79-5F22-4C1D-8900-34277EC448CF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "extensions", "graph\~\.azure-functions-core-tools\Functions\ExtensionBundles\Microsoft.Azure.Functions.ExtensionBundle\1.3.0\extensions.csproj", "{941BCD4C-B882-436E-BB86-31BFCCB46A68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{941BCD4C-B882-436E-BB86-31BFCCB46A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{941BCD4C-B882-436E-BB86-31BFCCB46A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{941BCD4C-B882-436E-BB86-31BFCCB46A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{941BCD4C-B882-436E-BB86-31BFCCB46A68}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1FC8BAC5-A17D-42B6-97E7-29A2CA8FE40F} = {9019761F-879C-4207-9664-6DDDE7B127AD}
+		{1E0F239D-490F-4986-8C12-283620D3EFEA} = {1FC8BAC5-A17D-42B6-97E7-29A2CA8FE40F}
+		{53583785-73D9-4D9F-9477-83E10ACD933D} = {1E0F239D-490F-4986-8C12-283620D3EFEA}
+		{90F1719A-7C75-4B55-B06C-60C1251B1BC0} = {53583785-73D9-4D9F-9477-83E10ACD933D}
+		{30627D79-5F22-4C1D-8900-34277EC448CF} = {90F1719A-7C75-4B55-B06C-60C1251B1BC0}
+		{941BCD4C-B882-436E-BB86-31BFCCB46A68} = {30627D79-5F22-4C1D-8900-34277EC448CF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {39FC57D3-3B37-4627-9DB3-76F4BF0F4D8E}
+	EndGlobalSection
+EndGlobal

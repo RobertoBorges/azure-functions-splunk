@@ -5,5 +5,6 @@
     "debug.internalConsoleOptions": "neverOpen",
     "azureFunctions.preDeployTask": "npm prune",
     "azureFunctions.deploySubpath": "storage-hec",
-    "azureFunctions.projectSubpath": "storage-hec"
+    "azureFunctions.projectSubpath": "storage-hec",
+    "azureLogicAppsStandard.projectSubpath": "event-hubs-hec"
 }
