@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 const axios = require("axios");
-const appInsights = require('applicationinsights');
-appInsights.setup(process.env["APPINSIGHTS_INSTRUMENTATIONKEY"]).start();
-const client = appInsights.defaultClient;
 
 // Enable the following code in order to Debug the HEC payload
 axios.interceptors.request.use((request) => {
@@ -132,8 +129,8 @@ const sendToHEC = function (message, sourcetype) {
         axios.post(process.env["SPLUNK_HEC_URL"], payload, {headers: headers,
           httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),});         
       } catch (error) {
-        client.trackException({ exception: new Error(
-          `Error sending message to Splunk: ${error} message: ${payload} `)}
+        console.error(
+          `Error sending message to Splunk: ${error} message: ${payload} `
         );
       }
       return;
@@ -250,11 +247,11 @@ const sendToHEC = function (message, sourcetype) {
             console.log(`response from splunk ${resp.status}`);
           })
           .catch((err) => {
-            client.trackException({ exception: new Error(`error from splunk ${err} payload ${payload}`)});
+            console.error(`error from splunk ${err} payload ${payload}`);
           });
       } catch (error) {
-        client.trackException({ exception: new Error(
-          `Error sending message to Splunk: ${error} message: ${payload} `) }
+        console.error(
+          `Error sending message to Splunk: ${error} message: ${payload} `
         );
       }
     });
@@ -272,7 +269,8 @@ const sendToHEC = function (message, sourcetype) {
         httpsAgent: new (require("https").Agent)({ rejectUnauthorized: false }),
       });
     } catch (error) {
-      client.trackException({ exception: new Error(`Error sending message to Splunk: ${error} message: ${payload} `)}
+      console.error(
+        `Error sending message to Splunk: ${error} message: ${payload} `
       );
     }
   }
